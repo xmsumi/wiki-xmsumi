@@ -9,6 +9,7 @@ node_modules/  # 根目录
 */node_modules/ # 一级子目录
 */*/node_modules/ # 二级子目录
 **/node_modules/ # Node.js 依赖
+**/.next/      
 **/logs/        # 日志文件
 **/build/        # 编译输出
 **/dist/         # 打包输出
