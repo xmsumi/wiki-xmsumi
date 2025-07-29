@@ -1,0 +1,297 @@
+/* 搜索组件样式 */
+
+/* 搜索框样式 */
+.search-box .ant-input-search {
+  border-radius: 8px;
+}
+
+.search-box .ant-input-search .ant-input {
+  border-radius: 8px 0 0 8px;
+  border-right: none;
+}
+
+.search-box .ant-input-search .ant-input-search-button {
+  border-radius: 0 8px 8px 0;
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+.search-box .ant-input-search .ant-input-search-button:hover {
+  background: #40a9ff;
+  border-color: #40a9ff;
+}
+
+/* 搜索建议下拉框样式 */
+.search-suggestions {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 500px !important;
+}
+
+.search-suggestions .ant-select-item {
+  padding: 8px 12px;
+}
+
+.search-suggestions .ant-select-item:hover {
+  background-color: #f0f9ff;
+}
+
+.search-suggestions .ant-select-item-group-label {
+  padding: 8px 12px;
+  font-weight: 600;
+  color: #374151;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* 搜索结果样式 */
+.search-results .search-result-item {
+  padding: 20px 0;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s;
+}
+
+.search-results .search-result-item:hover {
+  background-color: #fafafa;
+}
+
+.search-results .search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-results .search-result-item mark {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 1px 2px;
+  border-radius: 2px;
+  font-weight: 500;
+}
+
+.search-results .ant-list-item-meta-title {
+  margin-bottom: 8px;
+}
+
+.search-results .ant-list-item-meta-title a {
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.search-results .ant-list-item-meta-description {
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+/* 搜索历史样式 */
+.search-history .ant-list-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.search-history .ant-list-item:last-child {
+  border-bottom: none;
+}
+
+.search-history .ant-list-item-meta-title {
+  margin-bottom: 4px;
+}
+
+.search-history .ant-list-item-meta-title .ant-btn-link {
+  font-size: 14px;
+  height: auto;
+  line-height: 1.4;
+}
+
+.search-history .ant-list-item-meta-description {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.search-history .ant-list-item-action {
+  margin-left: 8px;
+}
+
+.search-history .ant-list-item-action li {
+  padding: 0 4px;
+}
+
+/* 热门搜索排名样式 */
+.search-history .ant-list-item-meta-avatar {
+  min-width: auto;
+  margin-right: 12px;
+}
+
+/* 搜索过滤器样式 */
+.search-box .ant-btn-group .ant-btn {
+  border-radius: 0;
+}
+
+.search-box .ant-btn-group .ant-btn:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+.search-box .ant-btn-group .ant-btn:last-child {
+  border-radius: 0 6px 6px 0;
+}
+
+/* 搜索统计信息样式 */
+.search-results .ant-card-body > div:first-child {
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 16px;
+}
+
+/* 分页样式 */
+.search-results .ant-pagination {
+  text-align: center;
+}
+
+.search-results .ant-pagination-item {
+  border-radius: 6px;
+}
+
+.search-results .ant-pagination-item-active {
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+.search-results .ant-pagination-item-active a {
+  color: #fff;
+}
+
+/* 响应式样式 */
+@media (max-width: 768px) {
+  .search-box {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .search-box > div:first-child {
+    width: 100%;
+  }
+  
+  .search-results .search-result-item {
+    padding: 16px 0;
+  }
+  
+  .search-results .ant-list-item-meta-title a {
+    font-size: 16px;
+  }
+  
+  .search-results .ant-list-item-meta-description {
+    font-size: 14px;
+  }
+  
+  .search-suggestions {
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .search-results .ant-card-body > div:first-child {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .search-results .ant-btn-group {
+    width: 100%;
+  }
+  
+  .search-results .ant-btn-group .ant-btn {
+    flex: 1;
+  }
+}
+
+/* 加载状态样式 */
+.search-results .ant-spin-container {
+  min-height: 200px;
+}
+
+/* 空状态样式 */
+.search-results .ant-empty,
+.search-history .ant-empty {
+  padding: 40px 20px;
+}
+
+.search-results .ant-empty-description,
+.search-history .ant-empty-description {
+  color: #9ca3af;
+}
+
+/* 标签样式 */
+.search-results .ant-tag {
+  margin: 2px 4px 2px 0;
+  border-radius: 4px;
+}
+
+.search-results .ant-tag-blue {
+  background: #e6f7ff;
+  border-color: #91d5ff;
+  color: #1890ff;
+}
+
+.search-results .ant-tag-green {
+  background: #f6ffed;
+  border-color: #b7eb8f;
+  color: #52c41a;
+}
+
+/* 趋势图标样式 */
+.search-history .text-green-500 {
+  color: #10b981;
+}
+
+.search-history .text-red-500 {
+  color: #ef4444;
+}
+
+.search-history .bg-gray-400 {
+  background-color: #9ca3af;
+}
+
+/* 搜索建议中的标签样式 */
+.search-suggestions .ant-tag {
+  font-size: 11px;
+  padding: 0 4px;
+  line-height: 16px;
+  border-radius: 2px;
+}
+
+/* 高亮搜索词样式增强 */
+.search-results mark {
+  background: linear-gradient(120deg, #fff3cd 0%, #ffeaa7 100%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+}
+
+/* 搜索框焦点状态 */
+.search-box .ant-input-search .ant-input:focus {
+  border-color: #40a9ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* 搜索历史项目悬停效果 */
+.search-history .ant-list-item:hover {
+  background-color: #f8fafc;
+  border-radius: 6px;
+  margin: 0 -8px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+/* 热门搜索排名颜色 */
+.search-history .bg-red-100 {
+  background-color: #fee2e2;
+}
+
+.search-history .text-red-600 {
+  color: #dc2626;
+}
+
+.search-history .bg-gray-100 {
+  background-color: #f3f4f6;
+}
+
+.search-history .text-gray-600 {
+  color: #4b5563;
+}

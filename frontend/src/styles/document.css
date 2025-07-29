@@ -1,0 +1,324 @@
+/* 文档组件样式 */
+
+/* 目录树样式 */
+.directory-tree .ant-tree-node-content-wrapper {
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.directory-tree .ant-tree-node-content-wrapper:hover {
+  background-color: #f0f9ff;
+}
+
+.directory-tree .ant-tree-node-selected .ant-tree-node-content-wrapper {
+  background-color: #e0f2fe !important;
+  color: #0ea5e9;
+}
+
+.directory-tree .ant-tree-title {
+  font-size: 14px;
+}
+
+.directory-tree .ant-tree-switcher {
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+}
+
+/* 文档查看器样式 */
+.document-viewer .document-content {
+  line-height: 1.8;
+  color: #374151;
+}
+
+.document-viewer .document-content h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  margin-top: 2rem;
+}
+
+.document-viewer .document-content h1:first-child {
+  margin-top: 0;
+}
+
+.document-viewer .document-content h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.document-viewer .document-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.document-viewer .document-content h4,
+.document-viewer .document-content h5,
+.document-viewer .document-content h6 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.document-viewer .document-content p {
+  margin-bottom: 1rem;
+  text-align: justify;
+}
+
+.document-viewer .document-content ul,
+.document-viewer .document-content ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.document-viewer .document-content li {
+  margin-bottom: 0.5rem;
+}
+
+.document-viewer .document-content blockquote {
+  border-left: 4px solid #3b82f6;
+  background-color: #f8fafc;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.document-viewer .document-content blockquote p {
+  margin-bottom: 0;
+  color: #64748b;
+  font-style: italic;
+}
+
+.document-viewer .document-content code {
+  background-color: #f1f5f9;
+  color: #e11d48;
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+}
+
+.document-viewer .document-content pre {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  padding: 1.5rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.document-viewer .document-content pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.document-viewer .document-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.document-viewer .document-content th,
+.document-viewer .document-content td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.document-viewer .document-content th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+}
+
+.document-viewer .document-content tr:hover {
+  background-color: #f9fafb;
+}
+
+.document-viewer .document-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin: 1rem 0;
+}
+
+.document-viewer .document-content a {
+  color: #3b82f6;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.document-viewer .document-content a:hover {
+  color: #1d4ed8;
+  border-bottom-color: #3b82f6;
+}
+
+/* 目录导航样式 */
+.table-of-contents .toc-anchor {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.table-of-contents .toc-anchor .ant-anchor-link {
+  padding: 2px 0;
+}
+
+.table-of-contents .toc-anchor .ant-anchor-link-title {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #6b7280;
+  transition: color 0.2s;
+}
+
+.table-of-contents .toc-anchor .ant-anchor-link-title:hover {
+  color: #3b82f6;
+}
+
+.table-of-contents .toc-anchor .ant-anchor-link-active .ant-anchor-link-title {
+  color: #1d4ed8;
+  font-weight: 500;
+}
+
+.table-of-contents .toc-anchor .ant-anchor-ink {
+  width: 2px;
+  background-color: #e5e7eb;
+}
+
+.table-of-contents .toc-anchor .ant-anchor-ink-ball {
+  width: 6px;
+  height: 6px;
+  border: 2px solid #3b82f6;
+  background-color: #ffffff;
+  border-radius: 50%;
+}
+
+/* 响应式样式 */
+@media (max-width: 1024px) {
+  .document-viewer {
+    flex-direction: column;
+  }
+  
+  .table-of-contents {
+    order: -1;
+    margin-bottom: 1rem;
+  }
+  
+  .table-of-contents .toc-anchor {
+    max-height: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .document-viewer .document-content h1 {
+    font-size: 1.75rem;
+  }
+  
+  .document-viewer .document-content h2 {
+    font-size: 1.375rem;
+  }
+  
+  .document-viewer .document-content h3 {
+    font-size: 1.125rem;
+  }
+  
+  .document-viewer .document-content pre {
+    padding: 1rem;
+    font-size: 0.8rem;
+  }
+  
+  .document-viewer .document-content table {
+    font-size: 0.875rem;
+  }
+  
+  .document-viewer .document-content th,
+  .document-viewer .document-content td {
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* 打印样式 */
+@media print {
+  .table-of-contents,
+  .document-viewer .ant-card-head,
+  .document-viewer .ant-space,
+  .no-print {
+    display: none !important;
+  }
+  
+  .document-viewer .document-content {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: #000;
+  }
+  
+  .document-viewer .document-content h1,
+  .document-viewer .document-content h2,
+  .document-viewer .document-content h3 {
+    page-break-after: avoid;
+    color: #000;
+  }
+  
+  .document-viewer .document-content pre {
+    background: #f5f5f5 !important;
+    color: #000 !important;
+    border: 1px solid #ccc;
+  }
+  
+  .document-viewer .document-content blockquote {
+    border-left: 4px solid #000;
+    background: #f9f9f9;
+  }
+}
+
+/* 代码高亮主题覆盖 */
+.document-viewer .document-content pre[class*="language-"] {
+  background: #1e293b !important;
+}
+
+.document-viewer .document-content code[class*="language-"] {
+  background: transparent !important;
+}
+
+/* 滚动条样式 */
+.directory-tree::-webkit-scrollbar,
+.table-of-contents .toc-anchor::-webkit-scrollbar {
+  width: 4px;
+}
+
+.directory-tree::-webkit-scrollbar-track,
+.table-of-contents .toc-anchor::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.directory-tree::-webkit-scrollbar-thumb,
+.table-of-contents .toc-anchor::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.directory-tree::-webkit-scrollbar-thumb:hover,
+.table-of-contents .toc-anchor::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

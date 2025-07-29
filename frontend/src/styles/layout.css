@@ -1,0 +1,151 @@
+/* 布局组件样式 */
+
+/* 主布局样式 */
+.site-layout {
+  background: #f8fafc;
+}
+
+.site-layout-background {
+  background: #ffffff;
+  min-height: calc(100vh - 64px - 70px); /* 减去header和footer高度 */
+}
+
+/* 头部样式 */
+.ant-layout-header {
+  height: 64px;
+  line-height: 64px;
+  padding: 0;
+}
+
+/* 侧边栏样式 */
+.ant-layout-sider {
+  box-shadow: 2px 0 8px 0 rgba(29, 35, 41, 0.05);
+}
+
+.ant-layout-sider-collapsed .ant-menu-item-icon {
+  font-size: 16px;
+}
+
+/* 菜单样式 */
+.ant-menu-inline .ant-menu-item {
+  margin: 0;
+  border-radius: 0;
+}
+
+.ant-menu-inline .ant-menu-item:hover {
+  background-color: #f0f9ff;
+}
+
+.ant-menu-inline .ant-menu-item-selected {
+  background-color: #e0f2fe;
+  border-right: 3px solid #0ea5e9;
+}
+
+/* 面包屑样式 */
+.ant-breadcrumb {
+  font-size: 14px;
+}
+
+.ant-breadcrumb-link {
+  color: #6b7280;
+}
+
+.ant-breadcrumb-link:hover {
+  color: #0ea5e9;
+}
+
+/* 底部样式 */
+.ant-layout-footer {
+  padding: 24px 50px;
+  color: #6b7280;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* 响应式样式 */
+@media (max-width: 768px) {
+  .ant-layout-sider {
+    position: fixed !important;
+    height: 100vh;
+    z-index: 999;
+  }
+  
+  .ant-layout-sider-collapsed {
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+  }
+  
+  .site-layout {
+    margin-left: 0 !important;
+  }
+  
+  .ant-layout-footer {
+    padding: 16px 24px;
+  }
+}
+
+/* 搜索框样式 */
+.ant-input-search .ant-input-group .ant-input-affix-wrapper {
+  border-radius: 6px 0 0 6px;
+}
+
+.ant-input-search .ant-input-search-button {
+  border-radius: 0 6px 6px 0;
+}
+
+/* 用户下拉菜单样式 */
+.ant-dropdown-menu-item:hover {
+  background-color: #f0f9ff;
+}
+
+/* 抽屉样式 */
+.ant-drawer-header {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.ant-drawer-body {
+  padding: 0;
+}
+
+/* 卡片样式 */
+.ant-card {
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.ant-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* 列表样式 */
+.ant-list-item {
+  border-bottom: 1px solid #f3f4f6;
+  padding: 16px 0;
+}
+
+.ant-list-item:last-child {
+  border-bottom: none;
+}
+
+/* 标签样式 */
+.ant-tag {
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* 按钮样式 */
+.ant-btn {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.ant-btn-primary {
+  background: #0ea5e9;
+  border-color: #0ea5e9;
+}
+
+.ant-btn-primary:hover {
+  background: #0284c7;
+  border-color: #0284c7;
+}
