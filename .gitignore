@@ -1,17 +1,14 @@
-# ---------- 开发环境 ----------
 .kiro/
-.vscode/      # VS Code 配置
-.idea/        # IntelliJ IDE 配置
-.DS_Store     # macOS 系统文件
+.vscode/ 
+.idea/
+.DS_Store
 
-# 过滤任意层级的目录
-
-node_modules/  # 根目录
-*/node_modules/ # 一级子目录
-*/*/node_modules/ # 二级子目录
-**/node_modules/ # Node.js 依赖
+node_modules/
+*/node_modules/
+*/*/node_modules/
+**/node_modules/
 */*/.next/ 
 **/.next/      
-**/logs/        # 日志文件
-**/build/        # 编译输出
-**/dist/         # 打包输出
+**/logs/
+**/build/
+**/dist/
