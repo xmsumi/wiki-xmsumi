@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Button, Dropdown, Avatar, Space, Input } from 'antd';
+import { Layout, Button, Input } from 'antd';
 import { 
   MenuOutlined, 
   SearchOutlined, 
-  UserOutlined, 
-  SettingOutlined, 
-  LogoutOutlined,
   HomeOutlined 
 } from '@ant-design/icons';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/authStore';
+import { UserInfo } from '@/components/auth';
 
 const { Header: AntHeader } = Layout;
 const { Search } = Input;
@@ -21,33 +19,8 @@ const { Search } = Input;
  */
 const Header: React.FC = () => {
   const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const { user } = useAuthStore();
   const [collapsed, setCollapsed] = useState(false);
-
-  // 用户下拉菜单项
-  const userMenuItems = [
-    {
-      key: 'profile',
-      icon: <UserOutlined />,
-      label: '个人资料',
-      onClick: () => router.push('/profile'),
-    },
-    {
-      key: 'settings',
-      icon: <SettingOutlined />,
-      label: '系统设置',
-      onClick: () => router.push('/admin/settings'),
-    },
-    {
-      type: 'divider' as const,
-    },
-    {
-      key: 'logout',
-      icon: <LogoutOutlined />,
-      label: '退出登录',
-      onClick: logout,
-    },
-  ];
 
   // 处理搜索
   const handleSearch = (value: string) => {
@@ -89,26 +62,11 @@ const Header: React.FC = () => {
       {/* 右侧：用户菜单 */}
       <div className="flex items-center space-x-4">
         {user ? (
-          <Dropdown
-            menu={{ items: userMenuItems }}
-            placement="bottomRight"
-            trigger={['click']}
-          >
-            <Space className="cursor-pointer hover:bg-gray-50 px-2 py-1 rounded">
-              <Avatar 
-                size="small" 
-                icon={<UserOutlined />}
-                src={user.avatar_url}
-              />
-              <span className="hidden sm:inline text-gray-700">
-                {user.username}
-              </span>
-            </Space>
-          </Dropdown>
+          <UserInfo user={user} showName={true} size="small" />
         ) : (
           <Button 
             type="primary" 
-            onClick={() => router.push('/login')}
+            onClick={() => router.push('/auth/login')}
           >
             登录
           </Button>

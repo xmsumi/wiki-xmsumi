@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Typography, Anchor } from 'antd';
 import { FileTextOutlined } from '@ant-design/icons';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { Link } = Anchor;
 
 interface TocItem {
@@ -30,31 +30,6 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
   showTitle = true,
 }) => {
   const [activeLink, setActiveLink] = useState<string>('');
-
-  // 从Markdown内容中提取标题
-  const tocItems = useMemo(() => {
-    if (!content) return [];
-
-    const headingRegex = /^(#{1,6})\s+(.+)$/gm;
-    const headings: TocItem[] = [];
-    let match;
-
-    while ((match = headingRegex.exec(content)) !== null) {
-      const level = match[1].length;
-      if (level <= maxLevel) {
-        const title = match[2].trim();
-        const id = generateId(title);
-        
-        headings.push({
-          id,
-          title,
-          level,
-        });
-      }
-    }
-
-    return buildTocTree(headings);
-  }, [content, maxLevel]);
 
   // 生成标题ID
   const generateId = (title: string): string => {
@@ -95,6 +70,31 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
     return result;
   };
 
+  // 从Markdown内容中提取标题
+  const tocItems = useMemo(() => {
+    if (!content) return [];
+
+    const headingRegex = /^(#{1,6})\s+(.+)$/gm;
+    const headings: TocItem[] = [];
+    let match;
+
+    while ((match = headingRegex.exec(content)) !== null) {
+      const level = match[1].length;
+      if (level <= maxLevel) {
+        const title = match[2].trim();
+        const id = generateId(title);
+        
+        headings.push({
+          id,
+          title,
+          level,
+        });
+      }
+    }
+
+    return buildTocTree(headings);
+  }, [content, maxLevel]);
+
   // 渲染目录项
   const renderTocItems = (items: TocItem[]): React.ReactNode => {
     return items.map(item => (
@@ -125,7 +125,6 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({
   useEffect(() => {
     const handleScroll = () => {
       const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
       
       let currentHeading = '';
       

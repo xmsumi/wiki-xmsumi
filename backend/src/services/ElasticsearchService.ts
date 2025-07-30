@@ -389,4 +389,21 @@ export class ElasticsearchService {
       return null;
     }
   }
+
+  /**
+   * 检查Elasticsearch连接状态
+   */
+  public async ping(): Promise<boolean> {
+    if (!this.client) {
+      return false;
+    }
+    
+    try {
+      await this.client.ping();
+      return true;
+    } catch (error) {
+      logger.error('Elasticsearch ping失败:', error);
+      return false;
+    }
+  }
 }

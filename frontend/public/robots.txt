@@ -1,0 +1,10 @@
+# robots.txt for Wiki知识库
+User-agent: *
+Allow: /
+
+# 禁止访问管理页面
+Disallow: /admin/
+Disallow: /api/
+
+# 站点地图
+Sitemap: /sitemap.xml

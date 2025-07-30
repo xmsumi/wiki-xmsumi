@@ -42,12 +42,12 @@ export class DatabaseConnection {
     try {
       const config = getDatabaseConfig();
       this.pool = mysql.createPool(config);
-      
+
       // 测试连接
       const connection = await this.pool.getConnection();
       await connection.ping();
       connection.release();
-      
+
       logger.info('数据库连接池初始化成功');
     } catch (error) {
       logger.error('数据库连接失败:', error);
@@ -72,7 +72,7 @@ export class DatabaseConnection {
     if (!this.pool) {
       throw new Error('数据库连接池未初始化');
     }
-    
+
     try {
       const [results] = await this.pool.execute(sql, params);
       return results;

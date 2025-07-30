@@ -10,14 +10,20 @@ import { notFoundHandler } from '@/middleware/notFoundHandler';
 import { logger } from '@/utils/logger';
 import { SearchService } from '@/services/SearchService';
 import { DocumentRepository } from '@/repositories/DocumentRepository';
+import { db } from '@/config/database';
+import { validateConfig } from '@/config/app';
 import authRoutes from '@/routes/auth';
 import documentRoutes from '@/routes/documents';
 import directoryRoutes from '@/routes/directories';
 import fileRoutes from '@/routes/files';
 import searchRoutes from '@/routes/search';
+import adminRoutes from '@/routes/admin';
 
 // 加载环境变量
 dotenv.config();
+
+// 验证配置
+validateConfig();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -49,6 +55,7 @@ app.use('/api/documents', documentRoutes);
 app.use('/api/directories', directoryRoutes);
 app.use('/api/files', fileRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/admin', adminRoutes);
 
 // API信息端点
 app.get('/api', (req, res) => {
@@ -70,6 +77,17 @@ app.get('/api', (req, res) => {
 app.use(notFoundHandler);
 app.use(errorHandler);
 
+// 初始化数据库连接
+async function initializeDatabase() {
+  try {
+    await db.initialize();
+    logger.info('数据库连接池初始化完成');
+  } catch (error) {
+    logger.error('数据库连接池初始化失败:', error);
+    throw error;
+  }
+}
+
 // 初始化搜索服务
 async function initializeSearchService() {
   try {
@@ -82,13 +100,29 @@ async function initializeSearchService() {
   }
 }
 
+// 应用初始化
+async function initializeApp() {
+  try {
+    // 1. 初始化数据库连接池
+    await initializeDatabase();
+    
+    // 2. 初始化搜索服务
+    await initializeSearchService();
+    
+    logger.info('应用初始化完成');
+  } catch (error) {
+    logger.error('应用初始化失败:', error);
+    process.exit(1);
+  }
+}
+
 // 启动服务器
 app.listen(PORT, async () => {
   logger.info(`服务器运行在端口 ${PORT}`);
   logger.info(`环境: ${process.env.NODE_ENV || 'development'}`);
   
-  // 初始化搜索服务
-  await initializeSearchService();
+  // 初始化应用
+  await initializeApp();
 });
 
 export default app;

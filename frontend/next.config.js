@@ -51,12 +51,18 @@ const nextConfig = {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
 
-  // API路由配置
+  // API路由配置 - 修复重写规则避免循环
   async rewrites() {
     return [
       {
         source: '/api/:path*',
         destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/:path*`,
+        has: [
+          {
+            type: 'header',
+            key: 'x-forwarded-for',
+          },
+        ],
       },
     ];
   },

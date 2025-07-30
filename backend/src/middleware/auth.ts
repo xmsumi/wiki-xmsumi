@@ -283,6 +283,70 @@ export const rateLimit = (options: RateLimitOptions) => {
 };
 
 /**
+ * 清除特定用户或IP的频率限制记录
+ */
+export const clearRateLimit = (identifier: string): boolean => {
+  const userKey = `user:${identifier}`;
+  const ipKey = `ip:${identifier}`;
+  
+  let cleared = false;
+  if (requestCounts.has(userKey)) {
+    requestCounts.delete(userKey);
+    cleared = true;
+  }
+  if (requestCounts.has(ipKey)) {
+    requestCounts.delete(ipKey);
+    cleared = true;
+  }
+  
+  return cleared;
+};
+
+/**
+ * 清除所有频率限制记录（仅开发环境）
+ */
+export const clearAllRateLimits = (): number => {
+  if (process.env.NODE_ENV !== 'development') {
+    return 0;
+  }
+  
+  const count = requestCounts.size;
+  requestCounts.clear();
+  return count;
+};
+
+/**
+ * 获取当前频率限制状态
+ */
+export const getRateLimitStatus = (identifier?: string): any => {
+  if (identifier) {
+    const userKey = `user:${identifier}`;
+    const ipKey = `ip:${identifier}`;
+    return {
+      user: requestCounts.get(userKey),
+      ip: requestCounts.get(ipKey)
+    };
+  }
+  
+  // 返回所有记录的统计信息
+  const now = Date.now();
+  const active = Array.from(requestCounts.entries())
+    .filter(([_, record]) => now <= record.resetTime)
+    .map(([key, record]) => ({
+      key,
+      count: record.count,
+      resetTime: new Date(record.resetTime).toISOString(),
+      remainingTime: Math.max(0, record.resetTime - now)
+    }));
+    
+  return {
+    total: requestCounts.size,
+    active: active.length,
+    records: active
+  };
+};
+
+/**
  * 清理过期的速率限制记录
  */
 setInterval(() => {

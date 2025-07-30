@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { AuthService } from '@/services/AuthService';
+import { emailVerificationService } from '@/services/EmailVerificationService';
+import { passwordResetService } from '@/services/PasswordResetService';
 import { AuthenticatedRequest } from '@/middleware/auth';
 import { 
   validateData, 
@@ -462,6 +464,586 @@ export class AuthController {
         error: {
           message: '生成随机密码失败',
           code: 'PASSWORD_GENERATION_FAILED'
+        },
+        timestamp: new Date().toISOString()
+      });
+    }
+  };
+
+  /**
+   * 获取频率限制状态（仅开发环境）
+   */
+  getRateLimitStatus = async (req: Request, res: Response): Promise<void> => {
+    try {
+      if (process.env.NODE_ENV !== 'development') {
+        res.status(403).json({
+          success: false,
+          error: {
+            message: '此功能仅在开发环境可用',
+            code: 'DEVELOPMENT_ONLY'
+          },
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      const { getRateLimitStatus } = await import('@/middleware/auth');
+      const { identifier } = req.query;
+      
+      const status = getRateLimitStatus(identifier as string);
+
+      res.status(200).json({
+        success: true,
+        data: status,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      logger.error('获取频率限制状态失败:', error);
+      
+      res.status(500).json({
+        success: false,
+        error: {
+          message: '获取频率限制状态失败',
+          code: 'RATE_LIMIT_STATUS_FAILED'
+        },
+        timestamp: new Date().toISOString()
+      });
+    }
+  };
+
+  /**
+   * 清除频率限制（仅开发环境）
+   */
+  clearRateLimit = async (req: Request, res: Response): Promise<void> => {
+    try {
+      if (process.env.NODE_ENV !== 'development') {
+        res.status(403).json({
+          success: false,
+          error: {
+            message: '此功能仅在开发环境可用',
+            code: 'DEVELOPMENT_ONLY'
+          },
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      const { clearRateLimit, clearAllRateLimits } = await import('@/middleware/auth');
+      const { identifier, all } = req.body;
+
+      let result;
+      if (all === true) {
+        const clearedCount = clearAllRateLimits();
+        result = {
+          message: `已清除所有频率限制记录`,
+          clearedCount
+        };
+      } else if (identifier) {
+        const cleared = clearRateLimit(identifier);
+        result = {
+          message: cleared ? `已清除用户/IP ${identifier} 的频率限制` : `未找到用户/IP ${identifier} 的频率限制记录`,
+          cleared
+        };
+      } else {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: '请提供 identifier 或设置 all=true',
+            code: 'MISSING_PARAMETERS'
+          },
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        data: result,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      logger.error('清除频率限制失败:', error);
+      
+      res.status(500).json({
+        success: false,
+        error: {
+          message: '清除频率限制失败',
+          code: 'CLEAR_RATE_LIMIT_FAILED'
+        },
+        timestamp: new Date().toISOString()
+      });
+    }
+  };
+
+  // ==================== 邮件验证相关方法 ====================
+
+  /**
+   * 发送邮箱验证邮件
+   */
+  sendVerificationEmail = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          success: false,
+          error: {
+            message: '用户未认证',
+            code: 'UNAUTHENTICATED'
+          },
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      const baseUrl = req.body.baseUrl || `${req.protocol}://${req.get('host')}`;
+      
+      const result = await emailVerificationService.sendVerificationEmail(
+        req.user.id,
+        req.user.email,
+        req.user.username,
+        baseUrl
+      );
+
+      if (result.success) {
+        res.status(200).json({
+          success: true,
+          data: {
+            message: result.message
+          },
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: result.message,
+            code: 'VERIFICATION_EMAIL_FAILED'
+          },
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      logger.error('发送验证邮件失败:', error);
+      res.status(500).json({
+        success: false,
+        error: {
+          message: '发送验证邮件失败',
+          code: 'VERIFICATION_EMAIL_ERROR'
+        },
+        timestamp: new Date().toISOString()
+      });
+    }
+  };
+
+  /**
+   * 验证邮箱
+   */
+  verifyEmail = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { token, code } = req.query;
+
+      if (!token) {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: '缺少验证令牌',
+            code: 'MISSING_TOKEN'
+          },
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      const result = await emailVerificationService.verifyEmail(
+        token as string,
+        code as string
+      );
+
+      if (result.success) {
+        res.status(200).json({
+          success: true,
+          data: {
+            message: result.message,
+            userId: result.userId
+          },
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: result.message,
+            code: 'EMAIL_VERIFICATION_FAILED'
+          },
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      logger.error('邮箱验证失败:', error);
+      res.status(500).json({
+        success: false,
+        error: {
+          message: '邮箱验证失败',
+          code: 'EMAIL_VERIFICATION_ERROR'
+        },
+        timestamp: new Date().toISOString()
+      });
+    }
+  };
+
+  /**
+   * 重新发送验证邮件
+   */
+  resendVerificationEmail = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          success: false,
+          error: {
+            message: '用户未认证',
+            code: 'UNAUTHENTICATED'
+          },
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      const baseUrl = req.body.baseUrl || `${req.protocol}://${req.get('host')}`;
+      
+      const result = await emailVerificationService.resendVerificationEmail(
+        req.user.id,
+        baseUrl
+      );
+
+      if (result.success) {
+        res.status(200).json({
+          success: true,
+          data: {
+            message: result.message
+          },
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: result.message,
+            code: 'RESEND_VERIFICATION_FAILED'
+          },
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      logger.error('重新发送验证邮件失败:', error);
+      res.status(500).json({
+        success: false,
+        error: {
+          message: '重新发送验证邮件失败',
+          code: 'RESEND_VERIFICATION_ERROR'
+        },
+        timestamp: new Date().toISOString()
+      });
+    }
+  };
+
+  /**
+   * 获取邮箱验证状态
+   */
+  getVerificationStatus = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          success: false,
+          error: {
+            message: '用户未认证',
+            code: 'UNAUTHENTICATED'
+          },
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      const status = await emailVerificationService.getVerificationStatus(req.user.id);
+
+      res.status(200).json({
+        success: true,
+        data: status,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      logger.error('获取验证状态失败:', error);
+      res.status(500).json({
+        success: false,
+        error: {
+          message: '获取验证状态失败',
+          code: 'VERIFICATION_STATUS_ERROR'
+        },
+        timestamp: new Date().toISOString()
+      });
+    }
+  };
+
+  // ==================== 密码重置相关方法 ====================
+
+  /**
+   * 请求密码重置
+   */
+  requestPasswordReset = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: '邮箱地址是必填项',
+            code: 'MISSING_EMAIL'
+          },
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      // 验证邮箱格式
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: '邮箱格式不正确',
+            code: 'INVALID_EMAIL_FORMAT'
+          },
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      const baseUrl = req.body.baseUrl || `${req.protocol}://${req.get('host')}`;
+      
+      const result = await passwordResetService.sendPasswordResetEmail(email, baseUrl);
+
+      // 无论用户是否存在，都返回成功消息（安全考虑）
+      res.status(200).json({
+        success: true,
+        data: {
+          message: result.message
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      logger.error('请求密码重置失败:', error);
+      res.status(500).json({
+        success: false,
+        error: {
+          message: '请求密码重置失败',
+          code: 'PASSWORD_RESET_REQUEST_ERROR'
+        },
+        timestamp: new Date().toISOString()
+      });
+    }
+  };
+
+  /**
+   * 验证密码重置令牌
+   */
+  validatePasswordResetToken = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { token } = req.query;
+
+      if (!token) {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: '缺少重置令牌',
+            code: 'MISSING_TOKEN'
+          },
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      const result = await passwordResetService.validateResetToken(token as string);
+
+      if (result.success) {
+        res.status(200).json({
+          success: true,
+          data: {
+            message: result.message,
+            email: result.email
+          },
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: result.message,
+            code: 'INVALID_RESET_TOKEN'
+          },
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      logger.error('验证重置令牌失败:', error);
+      res.status(500).json({
+        success: false,
+        error: {
+          message: '验证重置令牌失败',
+          code: 'RESET_TOKEN_VALIDATION_ERROR'
+        },
+        timestamp: new Date().toISOString()
+      });
+    }
+  };
+
+  /**
+   * 重置密码
+   */
+  resetPassword = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { token, newPassword, confirmPassword } = req.body;
+
+      if (!token || !newPassword || !confirmPassword) {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: '重置令牌、新密码和确认密码都是必填项',
+            code: 'MISSING_REQUIRED_FIELDS'
+          },
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: '新密码和确认密码不匹配',
+            code: 'PASSWORD_MISMATCH'
+          },
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      const result = await passwordResetService.resetPassword(token, newPassword);
+
+      if (result.success) {
+        res.status(200).json({
+          success: true,
+          data: {
+            message: result.message
+          },
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: result.message,
+            code: 'PASSWORD_RESET_FAILED'
+          },
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      logger.error('重置密码失败:', error);
+      res.status(500).json({
+        success: false,
+        error: {
+          message: '重置密码失败',
+          code: 'PASSWORD_RESET_ERROR'
+        },
+        timestamp: new Date().toISOString()
+      });
+    }
+  };
+
+  /**
+   * 获取密码重置状态
+   */
+  getPasswordResetStatus = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { email } = req.query;
+
+      if (!email) {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: '邮箱地址是必填项',
+            code: 'MISSING_EMAIL'
+          },
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      const status = await passwordResetService.getResetStatus(email as string);
+
+      res.status(200).json({
+        success: true,
+        data: status,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      logger.error('获取重置状态失败:', error);
+      res.status(500).json({
+        success: false,
+        error: {
+          message: '获取重置状态失败',
+          code: 'RESET_STATUS_ERROR'
+        },
+        timestamp: new Date().toISOString()
+      });
+    }
+  };
+
+  /**
+   * 取消密码重置
+   */
+  cancelPasswordReset = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { token } = req.body;
+
+      if (!token) {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: '重置令牌是必填项',
+            code: 'MISSING_TOKEN'
+          },
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+
+      const result = await passwordResetService.cancelPasswordReset(token);
+
+      if (result.success) {
+        res.status(200).json({
+          success: true,
+          data: {
+            message: result.message
+          },
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          error: {
+            message: result.message,
+            code: 'CANCEL_RESET_FAILED'
+          },
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      logger.error('取消密码重置失败:', error);
+      res.status(500).json({
+        success: false,
+        error: {
+          message: '取消密码重置失败',
+          code: 'CANCEL_RESET_ERROR'
         },
         timestamp: new Date().toISOString()
       });

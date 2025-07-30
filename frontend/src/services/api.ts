@@ -36,6 +36,9 @@ export interface PaginatedResponse<T> {
  */
 class ApiClient {
   private instance: AxiosInstance;
+  private isHandlingAuth = false; // 防止重复处理认证失败
+  private authFailureCount = 0; // 认证失败计数器
+  private lastAuthFailureTime = 0; // 上次认证失败时间
 
   constructor() {
     this.instance = axios.create({
@@ -86,7 +89,7 @@ class ApiClient {
         // 检查业务状态码
         if (response.data && !response.data.success) {
           const errorMessage = response.data.error?.message || '请求失败';
-          message.error(errorMessage);
+          // 不在拦截器中显示错误消息，让具体的请求处理
           return Promise.reject(new Error(errorMessage));
         }
 
@@ -96,35 +99,78 @@ class ApiClient {
         // 处理HTTP错误
         if (error.response) {
           const { status, data } = error.response;
-          
+
           switch (status) {
             case 401:
-              // 未授权，清除登录状态
-              useAuthStore.getState().logout();
-              message.error('登录已过期，请重新登录');
-              if (typeof window !== 'undefined') {
-                window.location.href = '/login';
+              // 检查是否是登录相关的请求
+              const isAuthRequest = error.config?.url?.includes('/auth/');
+
+              if (isAuthRequest) {
+                // 认证相关请求失败，不需要重定向，让页面自己处理
+                break;
+              }
+
+              // 检查当前是否已经在登录页面
+              if (typeof window !== 'undefined' && window.location.pathname.includes('/login')) {
+                break;
+              }
+
+              // 使用时间窗口防止重复处理认证失败
+              const currentTime = Date.now();
+              const timeSinceLastFailure = currentTime - this.lastAuthFailureTime;
+
+              // 如果距离上次认证失败不到5秒，跳过处理避免重复
+              if (timeSinceLastFailure < 5000 && this.authFailureCount > 0) {
+                this.authFailureCount++;
+                break;
+              }
+
+              // 防止重复处理认证失败
+              if (!this.isHandlingAuth) {
+                this.isHandlingAuth = true;
+                this.authFailureCount++;
+                this.lastAuthFailureTime = currentTime;
+
+                // 清除登录状态
+                useAuthStore.getState().logout();
+
+                // 只显示一次错误消息
+                if (this.authFailureCount === 1) {
+                  message.error('登录已过期，请重新登录');
+                }
+
+                // 延迟跳转，避免立即刷新
+                setTimeout(() => {
+                  if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+                    window.location.href = '/login';
+                  }
+                }, 1500);
+
+                // 延迟重置标志
+                setTimeout(() => {
+                  this.isHandlingAuth = false;
+                  if (Date.now() - this.lastAuthFailureTime > 10000) {
+                    this.authFailureCount = 0;
+                  }
+                }, 5000);
               }
               break;
             case 403:
-              message.error('没有权限访问该资源');
+              // 不在拦截器中显示错误，让页面处理
               break;
             case 404:
-              message.error('请求的资源不存在');
+              // 不在拦截器中显示错误，让页面处理
               break;
             case 500:
               message.error('服务器内部错误');
               break;
             default:
-              const errorMessage = data?.error?.message || `请求失败 (${status})`;
-              message.error(errorMessage);
+              // 其他错误不在拦截器中处理，让具体请求处理
+              break;
           }
         } else if (error.request) {
           // 网络错误
           message.error('网络连接失败，请检查网络设置');
-        } else {
-          // 其他错误
-          message.error(error.message || '未知错误');
         }
 
         return Promise.reject(error);

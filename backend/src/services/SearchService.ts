@@ -200,4 +200,22 @@ export class SearchService {
     }
     return null;
   }
+
+  /**
+   * 检查搜索服务连接状态
+   */
+  public async ping(): Promise<boolean> {
+    if (this.elasticsearchService.isAvailable()) {
+      try {
+        // 检查Elasticsearch连接
+        return await this.elasticsearchService.ping();
+      } catch (error) {
+        logger.error('Elasticsearch ping失败:', error);
+        return false;
+      }
+    }
+    
+    // MySQL搜索总是可用的（通过数据库连接）
+    return true;
+  }
 }
